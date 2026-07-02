@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>שוויץ והיער השחור</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#07111f;--bg2:#0d1728;--card:#101d32;--card2:#162743;--line:rgba(255,255,255,.12);
+  --text:#f8fbff;--muted:#a9b6c8;--blue:#4da3ff;--green:#14b8a6;--orange:#f59e0b;--red:#fb7185;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#07111f,#08101c 38%,#050a12);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:92px}
+.hero{
+  min-height:255px;padding:40px 18px 22px;display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(7,17,31,.82)),url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80");
+  background-size:cover;background-position:center;border-bottom:1px solid var(--line)
+}
+.hero h1{font-size:37px;margin:0;text-shadow:0 4px 22px #000;font-weight:900}
+.hero p{margin:8px 0 0;color:#eaf2ff;font-size:17px;text-shadow:0 2px 10px #000}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:rgba(0,0,0,.5);backdrop-filter:blur(12px);padding:10px 14px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,.16)}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+.screen{display:none}.screen.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{
+  background:linear-gradient(180deg,var(--card),#0b1627);border:1px solid var(--line);border-radius:24px;
+  padding:16px;margin:13px 0;box-shadow:0 16px 45px rgba(0,0,0,.23);overflow:hidden
+}
+.card h2{font-size:28px;margin:0 0 10px}.card h3{font-size:21px;margin:0 0 8px}.muted{color:var(--muted)}.big{font-size:34px;font-weight:900}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.ltr{direction:ltr;text-align:left}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;color:#fff;background:#2563eb;border:0;
+  border-radius:15px;padding:12px 14px;font-weight:800;margin:5px 3px;cursor:pointer;font-size:15px
+}
+.btn.green{background:#0f766e}.btn.alt{background:#263a59}.btn.orange{background:#b45309}.btn.red{background:#be123c}
+.day-card{border-right:5px solid var(--blue)}
+.stop,.meal,.hotelbox{padding:13px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);margin:10px 0}
+.stop b,.meal b{font-size:17px}.weather{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.weather span{background:#0b1627;border:1px solid var(--line);padding:8px 10px;border-radius:12px;color:#dce8f8}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(7,15,27,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.tab{background:transparent;border:0;color:var(--muted);padding:10px 2px 9px;font-size:12px}.tab b{display:block;font-size:23px}.tab.active{color:#fff}
+.route-line{border-right:2px dashed rgba(77,163,255,.55);padding-right:14px;margin-right:6px}
+.note, .budget-input{width:100%;padding:13px;border:1px solid var(--line);border-radius:15px;background:#091426;color:#fff;margin:6px 0;font-size:16px}
+.check{display:flex;gap:10px;align-items:center;margin:10px 0;padding:10px;border-radius:14px;background:rgba(255,255,255,.04)}
+.check input{width:23px;height:23px}
+.small{font-size:13px}.fav{float:left;background:transparent;border:1px solid var(--line);color:#fff;border-radius:999px;padding:8px 11px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.quick .btn{margin:0;padding:13px 8px}
+.searchbox{position:sticky;top:0;background:rgba(7,17,31,.85);backdrop-filter:blur(14px);padding:10px 0;z-index:8}
+.searchbox input{width:100%;padding:14px;border-radius:15px;border:1px solid var(--line);background:#0b1627;color:white;font-size:16px}
+.map-card iframe{width:100%;height:360px;border:0;border-radius:20px;background:white}
+.footer-tip{padding:14px;color:var(--muted);text-align:center}
+@media(max-width:600px){.hero h1{font-size:31px}.grid,.quick{grid-template-columns:1fr}.card h2{font-size:25px}.map-card iframe{height:310px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>שוויץ והיער השחור</h1>
+  <p>9 ימים · מסלולים · Waze · מזג אוויר · אוכל · לינה</p>
+  <div class="hero-actions">
+    <span class="badge">📍 הטיול שלך מוכן</span>
+    <span class="badge" id="onlineState">בודק חיבור...</span>
+  </div>
+</header>
+
+<main class="wrap">
+<section id="home" class="screen active">
+  <div class="grid">
+    <div class="card"><div class="muted">ימי טיול</div><div class="big">9</div></div>
+    <div class="card"><div class="muted">מדינות</div><div class="big">2</div></div>
+  </div>
+  <div class="card">
+    <h2>היום שלי</h2>
+    <p class="muted">בחר יום בטיול וקבל סדר יום, ניווט, מזג אוויר, אוכל ולינה.</p>
+    <div class="quick">
+      <button class="btn" onclick="openScreen('days')">📅 ימים</button>
+      <button class="btn green" onclick="openScreen('food')">🍽️ אוכל</button>
+      <button class="btn orange" onclick="openScreen('tools')">🧳 כלים</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>כללי זהב לטיול</h2>
+    <p>☀️ ימים בהירים: First, Jungfraujoch, Harder Kulm, Schilthorn.</p>
+    <p>🌧️ ימים מעוננים: Lauterbrunnen, Rhine Falls, Freiburg, Triberg.</p>
+    <p>🚗 תמיד פתח Waze מהכפתור של התחנה הבאה.</p>
+  </div>
+  <div class="card">
+    <h2>קישור מהיר</h2>
+    <a class="btn alt" href="https://waze.com/ul?q=Munich%20Airport&navigate=yes">התחל ממינכן</a>
+    <a class="btn alt" href="https://www.google.com/search?q=weather+Interlaken" target="_blank">מזג אוויר אינטרלאקן</a>
+  </div>
+</section>
+
+<section id="days" class="screen">
+  <div class="searchbox"><input id="daySearch" placeholder="חפש יום / מקום / מסעדה..." oninput="renderDays(this.value)"></div>
+  <div id="daysList"></div>
+</section>
+
+<section id="food" class="screen">
+  <div class="searchbox"><input placeholder="חפש מסעדה או עיר..." oninput="renderFood(this.value)"></div>
+  <div id="foodList"></div>
+</section>
+
+<section id="stay" class="screen">
+  <div id="stayList"></div>
+</section>
+
+<section id="map" class="screen">
+  <div class="card map-card">
+    <h2>מפה</h2>
+    <p class="muted">המפה כאן מבוססת חיפוש Google Maps לפי נקודות הטיול. אם היא לא נטענת, פתח את כפתורי Waze/Maps בכל יום.</p>
+    <iframe src="https://www.google.com/maps?q=Interlaken%20Lauterbrunnen%20Grindelwald%20Oeschinensee%20Freiburg%20Titisee%20Triberg&output=embed"></iframe>
+    <a class="btn" target="_blank" href="https://www.google.com/maps/search/Interlaken+Lauterbrunnen+Grindelwald+Oeschinensee+Freiburg+Titisee+Triberg">פתח מפה ב‑Google Maps</a>
+  </div>
+  <div id="mapStops"></div>
+</section>
+
+<section id="tools" class="screen">
+  <div class="card">
+    <h2>רשימת ציוד</h2>
+    <div id="packing"></div>
+  </div>
+  <div class="card">
+    <h2>תקציב</h2>
+    <input class="budget-input" id="fuel" placeholder="דלק €" type="number">
+    <input class="budget-input" id="foodb" placeholder="אוכל €" type="number">
+    <input class="budget-input" id="tickets" placeholder="רכבלים / אטרקציות €" type="number">
+    <input class="budget-input" id="other" placeholder="אחר €" type="number">
+    <button class="btn green" onclick="calcBudget()">חשב תקציב</button>
+    <h3 id="budgetTotal">סה״כ: €0</h3>
+  </div>
+  <div class="card">
+    <h2>חירום</h2>
+    <p>🇨🇭 שוויץ: חירום 112 · משטרה 117 · אמבולנס 144</p>
+    <p>🇩🇪 גרמניה: חירום 112 · משטרה 110</p>
+    <a class="btn red" href="tel:112">חייג 112</a>
+  </div>
+</section>
+</main>
+
+<nav class="tabs">
+  <button class="tab active" onclick="openScreen('home',this)"><b>🏠</b>בית</button>
+  <button class="tab" onclick="openScreen('days',this)"><b>📅</b>ימים</button>
+  <button class="tab" onclick="openScreen('food',this)"><b>🍽️</b>אוכל</button>
+  <button class="tab" onclick="openScreen('stay',this)"><b>🏨</b>לינה</button>
+  <button class="tab" onclick="openScreen('tools',this)"><b>🧳</b>כלים</button>
+</nav>
+
+<script>
+const DAYS=[
+{d:1,title:"מינכן → אינטרלאקן",area:"Interlaken",coords:[46.6863,7.8632],sleep:"אינטרלאקן / גרינדלוולד / לאוטרברונן",drive:"כ‑4.5 שעות",plan:["נחיתה במינכן ואיסוף רכב","נסיעה לכיוון שוויץ","עצירה אופציונלית בלוצרן","הגעה לאזור אינטרלאקן"],stops:["Munich Airport","Lucerne Switzerland","Interlaken Switzerland"],food:["Hüsi Bierhaus Interlaken","Restaurant Taverne Interlaken","Velo Cafe Interlaken"],photo:["Lake Brienz viewpoint","Harder Kulm sunset"]},
+{d:2,title:"עמק לאוטרברונן",area:"Lauterbrunnen",coords:[46.5935,7.9091],sleep:"לינה באותו בסיס באזור אינטרלאקן",drive:"נסיעות קצרות",plan:["Staubbach Falls","Trümmelbach Falls","עלייה למירן","תצפיות על Eiger, Mönch, Jungfrau"],stops:["Staubbach Falls Lauterbrunnen","Trümmelbach Falls","Mürren Switzerland"],food:["Airtime Cafe Lauterbrunnen","Hotel Oberland Restaurant Lauterbrunnen","Stägerstübli Mürren"],photo:["Staubbach Falls","Mürren viewpoint"]},
+{d:3,title:"גרינדלוולד ו‑First",area:"Grindelwald",coords:[46.6242,8.0414],sleep:"לינה באזור אינטרלאקן / גרינדלוולד",drive:"כ‑30–45 דקות מהבסיס",plan:["רכבל ל‑First","First Cliff Walk","הליכה לאגם Bachalpsee","אופציונלי: Mountain Cart / Trottibike"],stops:["Grindelwald Firstbahn","First Cliff Walk by Tissot","Bachalpsee"],food:["Berggasthaus First","Barry's Grindelwald","C und M Cafe Bar Restaurant Grindelwald"],photo:["Bachalpsee reflection","First Cliff Walk"]},
+{d:4,title:"אגם Oeschinensee",area:"Kandersteg",coords:[46.4989,7.7279],sleep:"לינה באזור אינטרלאקן / קנדרשטג",drive:"כ‑1 שעה מאינטרלאקן",plan:["נסיעה לקנדרשטג","רכבל לאגם","טיול סביב Oeschinensee","עצירה אופציונלית ב‑Blausee"],stops:["Kandersteg Oeschinensee Gondola","Oeschinensee","Blausee Switzerland"],food:["Restaurant Zur Sennhütte Oeschinensee","Nico's Restaurant Kandersteg","Blausee Restaurant"],photo:["Oeschinensee shore","Heuberg viewpoint"]},
+{d:5,title:"Jungfraujoch או Harder Kulm",area:"Interlaken",coords:[46.6863,7.8632],sleep:"לינה אחרונה באזור אינטרלאקן",drive:"תלוי בבחירה",plan:["יום פסגה אם מזג האוויר בהיר","Jungfraujoch – יקר ומרשים","Harder Kulm – קל ורגוע יותר","Brienz / Iseltwald אם רוצים יום רגוע"],stops:["Jungfraujoch","Harder Kulm","Iseltwald Switzerland","Brienz Switzerland"],food:["Panorama Restaurant Harder Kulm","Restaurant Laterne Interlaken","Grandhotel Giessbach Restaurant"],photo:["Harder Kulm Two Lakes Bridge","Iseltwald pier"]},
+{d:6,title:"מעבר ליער השחור",area:"Freiburg im Breisgau",coords:[47.9990,7.8421],sleep:"Freiburg / Titisee",drive:"כ‑2.5–3.5 שעות",plan:["יציאה צפונה","עצירה במפלי הריין","הגעה לפרייבורג / טיטיזה","טיול ערב קצר"],stops:["Rhine Falls Switzerland","Freiburg im Breisgau","Titisee"],food:["Schloss Laufen am Rheinfall","Hausbrauerei Feierling Freiburg","Restaurant Seegarten Titisee"],photo:["Rhine Falls boat","Freiburg old town"]},
+{d:7,title:"Titisee, Schluchsee ו‑Triberg",area:"Triberg",coords:[48.1317,8.2339],sleep:"Freiburg / Titisee",drive:"נסיעות קצרות ביער השחור",plan:["אגם Titisee","אגם Schluchsee","מפלי Triberg","עוגת יער שחור"],stops:["Titisee","Schluchsee","Triberg Waterfalls"],food:["Cafe Schäfer Triberg","Bergsee Restaurant Titisee","Restaurant Schwarzwaldstube Triberg"],photo:["Triberg waterfalls","Titisee lakeside"]},
+{d:8,title:"Schauinsland / Vogtsbauernhof",area:"Freiburg",coords:[47.9990,7.8421],sleep:"Freiburg / Titisee",drive:"כ‑30–70 דקות",plan:["עלייה ל‑Schauinsland","או מוזיאון פתוח Vogtsbauernhof","טיול בפרייבורג","ארוחת ערב בעיר העתיקה"],stops:["Schauinslandbahn","Vogtsbauernhof","Freiburg Münster"],food:["Markthalle Freiburg","Zum Roten Bären Freiburg","Cafe Schmidt Freiburg"],photo:["Schauinsland panorama","Freiburg Münster"]},
+{d:9,title:"פרייבורג → Ulm → מינכן",area:"Munich Airport",coords:[48.3538,11.7861],sleep:"טיסה / מינכן",drive:"כ‑3.5–4.5 שעות",plan:["בוקר בפרייבורג","נסיעה לכיוון מינכן","עצירה באולם – Ulm Minster","הגעה לשדה התעופה"],stops:["Freiburg Old Town","Ulm Minster","Munich Airport"],food:["Cafe Extrablatt Ulm","Barfüßer Ulm","Munich Airport restaurants"],photo:["Ulm Minster","Freiburg canals"]}
+];
+
+const PACK=["דרכון","רישיון נהיגה","רישיון בינלאומי","ביטוח נסיעות","כרטיס אשראי","מזומן קטן באירו/פרנק","מטען לאייפון","סוללת גיבוי","מתאם חשמל אירופה","נעלי הליכה","מעיל גשם","פליז / ביגוד חם","כובע","משקפי שמש","קרם הגנה","בקבוק מים","תרופות אישיות","תיק יום קטן","מצלמה","חטיפים למסלולים"];
+
+const $=id=>document.getElementById(id);
+function waze(q){return "https://waze.com/ul?q="+encodeURIComponent(q)+"&navigate=yes"}
+function gmaps(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)}
+function weather(area){return "https://www.google.com/search?q="+encodeURIComponent("weather "+area)}
+function favKey(x){return "fav_"+x}
+function toggleFav(x,btn){let k=favKey(x);let v=localStorage.getItem(k)==="1";localStorage.setItem(k,v?"0":"1");btn.textContent=v?"♡":"♥"}
+function weatherApi(day, elid){
+  const [lat,lon]=day.coords;
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto`)
+  .then(r=>r.json()).then(j=>{
+    let c=j.current, d=j.daily;
+    $(elid).innerHTML=`<span>🌡️ עכשיו ${Math.round(c.temperature_2m)}°</span><span>💧 גשם ${c.precipitation} מ״מ</span><span>💨 רוח ${Math.round(c.wind_speed_10m)} קמ״ש</span><span>☀️ זריחה ${String(d.sunrise[0]).slice(11,16)}</span><span>🌙 שקיעה ${String(d.sunset[0]).slice(11,16)}</span>`;
+  }).catch(()=>{$(elid).innerHTML=`<span>🌤️ <a style="color:white" target="_blank" href="${weather(day.area)}">פתח מזג אוויר</a></span>`})
+}
+function renderDays(filter=""){
+  filter=filter.toLowerCase();
+  const data=DAYS.filter(d=>(d.title+d.area+d.stops.join(" ")+d.food.join(" ")).toLowerCase().includes(filter));
+  $("daysList").innerHTML=data.map(day=>`
+  <article class="card day-card">
+    <button class="fav" onclick="toggleFav('day${day.d}',this)">${localStorage.getItem(favKey('day'+day.d))==="1"?"♥":"♡"}</button>
+    <h2>יום ${day.d}: ${day.title}</h2>
+    <p class="muted">📍 ${day.area} · 🚗 ${day.drive}</p>
+    <div class="weather" id="w${day.d}"><span>טוען מזג אוויר...</span></div>
+    <p>🏨 <b>לינה:</b> ${day.sleep}</p>
+    <h3>סדר יום מומלץ</h3>
+    <div class="route-line">${day.plan.map((p,i)=>`<div class="stop"><b>${String(i+1).padStart(2,"0")} · ${p}</b></div>`).join("")}</div>
+    <h3>ניווט לתחנות</h3>
+    ${day.stops.map(s=>`<div class="stop"><b>📍 ${s}</b><br><a class="btn" href="${waze(s)}">פתח ב‑Waze</a><a class="btn alt" target="_blank" href="${gmaps(s)}">Google Maps</a></div>`).join("")}
+    <h3>צילום</h3><p class="muted">${day.photo.map(p=>"📸 "+p).join(" · ")}</p>
+    <textarea class="note" placeholder="הערות אישיות ליום ${day.d}" oninput="localStorage.setItem('note${day.d}',this.value)">${localStorage.getItem('note'+day.d)||""}</textarea>
+  </article>`).join("");
+  data.forEach(d=>weatherApi(d,"w"+d.d));
+}
+function renderFood(filter=""){
+  filter=filter.toLowerCase();
+  $("foodList").innerHTML=DAYS.map(day=>{
+    let foods=day.food.filter(f=>(f+day.title+day.area).toLowerCase().includes(filter));
+    if(!foods.length)return "";
+    return `<div class="card"><h2>יום ${day.d}: ${day.area}</h2>${foods.map(f=>`<div class="meal"><b>🍽️ ${f}</b><br><a class="btn" href="${waze(f)}">נווט ב‑Waze</a><a class="btn alt" target="_blank" href="${gmaps(f)}">פרטים ודירוגים</a></div>`).join("")}</div>`;
+  }).join("");
+}
+function renderStay(){
+  $("stayList").innerHTML=DAYS.map(day=>`<div class="card"><h2>יום ${day.d}: לינה</h2><div class="hotelbox"><b>🏨 ${day.sleep}</b><p class="muted">עדכן כאן את שם המלון המדויק אחרי ההזמנה.</p><a class="btn" href="${waze(day.sleep)}">נווט לאזור הלינה</a><a class="btn alt" target="_blank" href="${gmaps(day.sleep)}">חפש מלונות באזור</a></div><textarea class="note" placeholder="שם מלון / כתובת / צ'ק אין" oninput="localStorage.setItem('hotel${day.d}',this.value)">${localStorage.getItem('hotel'+day.d)||""}</textarea></div>`).join("");
+}
+function renderMapStops(){
+  $("mapStops").innerHTML=`<div class="card"><h2>כל נקודות הניווט</h2>${DAYS.map(day=>`<h3>יום ${day.d}</h3>${day.stops.map(s=>`<div class="stop">📍 ${s}<br><a class="btn" href="${waze(s)}">Waze</a><a class="btn alt" target="_blank" href="${gmaps(s)}">Maps</a></div>`).join("")}`).join("")}</div>`;
+}
+function renderPacking(){
+  $("packing").innerHTML=PACK.map((p,i)=>`<label class="check"><input type="checkbox" ${localStorage.getItem("pack"+i)==="1"?"checked":""} onchange="localStorage.setItem('pack${i}',this.checked?'1':'0')">${p}</label>`).join("");
+}
+function calcBudget(){
+  const ids=["fuel","foodb","tickets","other"];
+  let sum=ids.reduce((a,id)=>a+(parseFloat($(id).value)||0),0);
+  localStorage.setItem("budget",JSON.stringify(ids.map(id=>$(id).value)));
+  $("budgetTotal").textContent="סה״כ: €"+sum.toFixed(0);
+}
+function loadBudget(){try{let vals=JSON.parse(localStorage.getItem("budget")||"[]");["fuel","foodb","tickets","other"].forEach((id,i)=>$(id).value=vals[i]||"")}catch(e){}}
+function openScreen(id,el){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); if(el)el.classList.add("active");
+  if(id==="map")renderMapStops();
+  scrollTo(0,0);
+}
+function online(){ $("onlineState").textContent=navigator.onLine?"מחובר לאינטרנט":"מצב לא מקוון"; }
+window.addEventListener("online",online);window.addEventListener("offline",online);
+renderDays();renderFood();renderStay();renderPacking();loadBudget();online();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>
